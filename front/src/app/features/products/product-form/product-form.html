@@ -91,27 +91,41 @@
           </div>
         </div>
 
-        <!-- Category ID + SKU -->
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">ID Catégorie</label>
-            <input
-              type="number"
-              class="form-control"
-              formControlName="category_id"
-              placeholder="Ex: 1"
-            />
-          </div>
-          <div class="form-group">
-            <label class="form-label">SKU</label>
-            <input
-              type="text"
-              class="form-control"
-              formControlName="sku"
-              placeholder="Ex: IPHONE-15-PRO"
-            />
-          </div>
-        </div>
+        
+<!-- Category + SKU -->
+<div class="form-row">
+  <div class="form-group">
+    <label class="form-label">Catégorie</label>
+
+    <select
+      class="form-control"
+      formControlName="category_id"
+    >
+      <option [ngValue]="null">-- Choisir une catégorie --</option>
+
+      @for (cat of categories(); track cat.id) {
+        <option [ngValue]="cat.id">
+          {{ cat.name }}
+        </option>
+      }
+    </select>
+
+    @if (categoriesLoading()) {
+      <span class="form-error">Chargement des catégories...</span>
+    }
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">SKU</label>
+    <input
+      type="text"
+      class="form-control"
+      formControlName="sku"
+      placeholder="Ex: IPHONE-15-PRO"
+    />
+  </div>
+</div>
+
 
         <!-- Description -->
         <div class="form-group">

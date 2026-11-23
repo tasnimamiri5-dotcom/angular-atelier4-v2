@@ -1,5 +1,7 @@
+
 const Joi = require('joi');
 
+// Product validation
 const productSchema = Joi.object({
   category_id: Joi.number().integer().positive().allow(null),
   name: Joi.string().max(150).required(),
@@ -16,8 +18,17 @@ const productUpdateSchema = productSchema.fork(
   (field) => field.optional()
 );
 
+// Category validation
+const categorySchema = Joi.object({
+  name: Joi.string().min(2).max(100).required(),
+});
+
+// Generic validation middleware
 const validate = (schema) => (req, res, next) => {
-  const { error, value } = schema.validate(req.body, { abortEarly: false });
+  const { error, value } = schema.validate(req.body, {
+    abortEarly: false,
+  });
+
   if (error) {
     return res.status(400).json({
       success: false,
@@ -25,6 +36,7 @@ const validate = (schema) => (req, res, next) => {
       errors: error.details.map((d) => d.message),
     });
   }
+
   req.body = value;
   next();
 };
@@ -32,4 +44,5 @@ const validate = (schema) => (req, res, next) => {
 module.exports = {
   validateCreate: validate(productSchema),
   validateUpdate: validate(productUpdateSchema),
+  validateCategory: validate(categorySchema),
 };

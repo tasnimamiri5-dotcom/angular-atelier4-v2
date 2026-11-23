@@ -1,0 +1,119 @@
+
+<div class="categories-container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1>Gestion des Catégories</h1>
+      <p>Gérez vos catégories de produits</p>
+    </div>
+
+    <div class="total-box">
+      <span>Total catégories</span>
+      <strong>{{ totalCategories() }}</strong>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  @if (error()) {
+    <div class="error-message">
+      {{ error() }}
+    </div>
+  }
+
+  <!-- Form -->
+  <div class="category-form">
+    <h2>
+      {{ editingId() !== null ? 'Modifier catégorie' : 'Ajouter une catégorie' }}
+    </h2>
+
+    <form (ngSubmit)="saveCategory()">
+
+      <input
+        type="text"
+        placeholder="Nom de la catégorie"
+        [ngModel]="categoryName()"
+        (ngModelChange)="categoryName.set($event)"
+        name="categoryName"
+        required
+        minlength="2"
+        maxlength="100"
+      />
+
+      <button type="submit" [disabled]="!categoryName().trim()">
+        {{ editingId() !== null ? 'Modifier' : 'Ajouter' }}
+      </button>
+
+      @if (editingId() !== null) {
+        <button type="button" class="cancel-btn" (click)="resetForm()">
+          Annuler
+        </button>
+      }
+
+    </form>
+  </div>
+
+  <!-- Categories List -->
+  <div class="categories-list">
+    <h2>Liste des catégories</h2>
+
+    <!-- Search -->
+    <div class="search-box">
+      <input
+        type="text"
+        placeholder="Rechercher une catégorie..."
+        [ngModel]="searchTerm()"
+        (ngModelChange)="searchTerm.set($event)"
+        name="searchTerm"
+      />
+    </div>
+
+    @if (loading()) {
+      <p>Chargement des catégories...</p>
+    } @else if (categories().length === 0) {
+      <p class="empty-message">Aucune catégorie disponible.</p>
+    } @else if (filteredCategories().length === 0) {
+      <p class="empty-message">
+        Aucune catégorie trouvée pour cette recherche.
+      </p>
+    } @else {
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>Nombre de produits</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (category of filteredCategories(); track category.id) {
+            <tr>
+              <td>{{ category.id }}</td>
+              <td>{{ category.name }}</td>
+              <td>{{ category.products_count ?? 0 }}</td>
+              <td>
+                <button
+                  class="edit-btn"
+                  (click)="editCategory(category)">
+                  Modifier
+                </button>
+
+                <button
+                  class="delete-btn"
+                  (click)="deleteCategory(category.id)">
+                  Supprimer
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+    }
+  </div>
+
+  <app-confirm-dialog></app-confirm-dialog>
+</div>

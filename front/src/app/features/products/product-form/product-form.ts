@@ -4,7 +4,8 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ProductService } from '../../../core/services/product.service';
 import { Product } from '../../../core/models/product.model';
-
+import { CategoryService } from '../../../core/services/category.service';
+import { Category } from '../../../core/models/category.model';
 @Component({
   selector: 'app-product-form',
   standalone: true,
@@ -17,7 +18,10 @@ export class ProductFormComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
+  private readonly categoryService = inject(CategoryService);
 
+  categories = signal<Category[]>([]);
+  categoriesLoading = signal(false);
   isEdit = signal(false);
   productId = signal<number | null>(null);
   loading = signal(false);
@@ -26,6 +30,20 @@ export class ProductFormComponent implements OnInit {
   toast = signal<{ message: string; type: 'success' | 'error' } | null>(null);
 
   imagePreview = signal<string | null>(null);
+  loadCategories() {
+  this.categoriesLoading.set(true);
+
+  this.categoryService.getAll().subscribe({
+    next: (res) => {
+      this.categories.set(res.data);
+      this.categoriesLoading.set(false);
+    },
+    error: () => {
+      this.error.set('Impossible de charger les catégories.');
+      this.categoriesLoading.set(false);
+    }
+  });
+}
 
   form = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
@@ -42,7 +60,9 @@ export class ProductFormComponent implements OnInit {
   submitLabel = computed(() => this.isEdit() ? 'Enregistrer les modifications' : 'Créer le produit');
 
   ngOnInit() {
-    const id = this.route.snapshot.paramMap.get('id');
+      this.loadCategories();
+
+  const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.isEdit.set(true);
       this.productId.set(Number(id));
