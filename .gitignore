@@ -1,6 +1,7 @@
+
 # Dependencies
 node_modules/
-*/node_modules/
+**/node_modules/
 
 # Environment variables & secrets
 .env
@@ -10,14 +11,14 @@ node_modules/
 
 # Build outputs
 dist/
-*/dist/
+**/dist/
 tmp/
 out-tsc/
 bazel-out/
 
 # Angular cache
 .angular/
-*/.angular/
+**/.angular/
 
 # Logs
 npm-debug.log*
@@ -25,7 +26,7 @@ yarn-debug.log*
 yarn-error.log*
 *.log
 
-# IDE & OS files
+# IDE & OS
 .vscode/
 .idea/
 .DS_Store
